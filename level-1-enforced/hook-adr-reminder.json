@@ -1,0 +1,12 @@
+{
+  "name": "ADR Reminder",
+  "version": "1.0.0",
+  "description": "タスク開始時にADR作成義務をエージェントに注入する。",
+  "when": {
+    "type": "preTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "⚠️ このタスクを完了する前にADRを作成せよ。\n\nパス: adrs/<NNNN>-<タイトル>.md\nADR未作成の場合、タスクは完了と認められない。\n決定、根拠、代替案の3セクションを必ず含めよ。"
+  }
+}

@@ -118,7 +118,10 @@ function Hero() {
 function Footer() {
   return (
     <footer className="footer">
-      <p>© {new Date().getFullYear()} Kyndryl Dashboard (Demo) — Built with React &amp; GitHub Copilot</p>
+      <p>
+        © {new Date().getFullYear()} Kyndryl Dashboard (Demo) — Built with React &amp; GitHub Copilot
+        <span className="footer-version" aria-label="version"> · v1.0</span>
+      </p>
     </footer>
   );
 }

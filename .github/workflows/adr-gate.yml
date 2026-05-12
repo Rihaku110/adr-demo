@@ -16,26 +16,46 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check ADR is required only for code changes
+      - name: Determine changed files
+        id: changed-files
         run: |
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="origin/${{ github.base_ref }}"
+            git fetch origin ${{ github.base_ref }}
+            CHANGED=$(git diff --name-only $BASE...HEAD)
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          fi
 
           echo "Changed files:"
           echo "$CHANGED"
 
-          # ADRがあるならOK
-          if echo "$CHANGED" | grep -q '^adrs/.*\.md$'; then
-            echo "ADR found."
-            exit 0
-          fi
+          # GitHub Actionsの後続stepで使えるように保存
+          echo "changed<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          # コード変更がある場合だけADR必須
+      - name: ADR Gate Check
+        run: |
+          CHANGED="${{ steps.changed-files.outputs.changed }}"
+
+          echo "Evaluating ADR requirement..."
+          echo "$CHANGED"
+
+          # コード変更があるか確認
           if echo "$CHANGED" | grep -qE '^(src/|react-app/src/|package.json|package-lock.json|vite.config.js|eslint.config.js)'; then
+            echo "Code changes detected."
+
+            # 今回の変更にADRが含まれているか確認
+            if echo "$CHANGED" | grep -qE '^adrs/[0-9]{4}-.+\.md$'; then
+              echo "ADR found in this change."
+              exit 0
+            fi
+
             echo "ADR is required for code changes."
             echo "Create adrs/<NNNN>-<title>.md"
             exit 1
           fi
 
-          # READMEなどの軽微な変更はADR不要
           echo "No ADR required for this change."
           exit 0

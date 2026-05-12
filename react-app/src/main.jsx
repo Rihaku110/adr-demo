@@ -12,3 +12,4 @@ createRoot(document.getElementById('root')).render(
 console.log('test')
 console.log('new ADR required test')
 console.log('minor tweak')
+console.log('app booted')

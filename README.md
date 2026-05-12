@@ -1,105 +1,120 @@
 # ADR Demo
 
-このリポジトリは、ADR（Architecture Decision Record）を**最小構成で強制する仕組み**のデモです。
+このリポジトリは、ADR（Architecture Decision Record）を段階的に強制する仕組みのデモです。
 
 ---
 
 ## 構成
 
-```
-ADR-DEMO/
-  adrs/
-    adr-brief.md
-    0001-...
-    0002-...
-    ...
-  level-1-enforced/
-    hook-adr-reminder.json
-    gate-adr-check.sh
-  react-app/
-  README.md
+```text
+.github/
+  workflows/
+    adr-gate.yml
+  hooks/
+adrs/
+react-app/
+README.md
 ```
 
 ---
 
 ## Level 0: ADRの導入
 
-* `adrs/` ディレクトリを作成
-* `adr-brief.md` テンプレートを配置
-* ADRを手動で作成
+`adrs/` ディレクトリを作成し、ADRを手動で作成する段階です。
 
-👉 ルールはあるが、強制力はない
+この時点では「ADRを書く」というルールはありますが、強制力はありません。
 
 ---
 
-## Level 1: ADR強制レイヤー
+## Level 1: ローカルでの促し（Hook）
 
-Level 1では、ADR作成を忘れないようにするため、以下の2つを追加する。
+Hookやスクリプトを使って、開発者にADR作成を促す段階です。
 
-```
-level-1-enforced/
-  hook-adr-reminder.json
-  gate-adr-check.sh
-```
+主な役割は以下です。
 
-### 役割
-
-| ファイル                   | 役割                           |
-| ---------------------- | ---------------------------- |
-| hook-adr-reminder.json | タスク開始時に「ADRを作成せよ」と通知する       |
-| gate-adr-check.sh      | タスク完了時にADRの存在を検証し、未作成なら失敗させる |
+* タスク開始時にADR作成を促す
+* ADRが存在するかをローカルで確認する
+* 開発者に「ADRを書く必要がある」ことを認識させる
 
 ---
 
-### ゲート確認方法
+## Level 1.5: CI + Branch Protectionによる強制
 
-プロジェクトルートで実行：
+GitHub Actions と Branch Protection を組み合わせて、ADR作成をマージ条件として強制します。
 
-```bash
-bash level-1-enforced/gate-adr-check.sh dir adrs
+### CI（GitHub Actions）
+
+対象ファイル:
+
+```text
+.github/workflows/adr-gate.yml
 ```
+
+PR作成時に自動でチェックを実行します。
+
+コード変更がある場合の判定は以下です。
+
+```text
+新しいADRがない → 失敗
+新しいADRがある → 成功
+```
+
+### Branch Protection
+
+`master` ブランチに対して以下を必須化します。
+
+* Pull Request 必須
+* `adr-gate` の成功必須
+* レビュー承認必須
+
+これにより、CI結果とレビュー条件を満たさない限りマージできません。
 
 ---
 
-### 判定結果
+## 動作イメージ
 
-#### ADRがある場合
+### ADRがない場合
 
+```text
+コード変更
+↓
+新規ADRなし
+↓
+CI失敗
+↓
+マージ不可
 ```
-[ADRゲート] PASS — adrsにADR ○件が存在
-```
 
-#### ADRがない場合
+### ADRがある場合
 
-```
-[ADRゲート] FAIL — adrsにADRファイルがありません
-タスク完了前にADRを作成してください。
-```
-
----
-
-### 判定ルール
-
-* `adrs/` 配下の `.md` ファイルをカウント
-* ただし以下は除外：
-
-  * `adr-brief.md`
-  * `adr-detailed.md`
-
-👉 実ADRは以下のように作成する：
-
-```
-adrs/0008-fix-hero-wrap-and-status-value-clipping.md
+```text
+コード変更
+↓
+新規ADR追加
+↓
+CI成功
+↓
+レビュー承認
+↓
+マージ可能
 ```
 
 ---
 
 ## まとめ
 
-* Level 0：ADRを書くルールがある
-* Level 1：ADRがないとタスク完了できない
+| レベル       | 内容                                |
+| --------- | --------------------------------- |
+| Level 0   | ADRルールを導入する                       |
+| Level 1   | HookでADR作成を促す                     |
+| Level 1.5 | CI + Branch ProtectionでADR作成を強制する |
 
-👉 Hookで促し、Gateで強制することで運用を成立させる
-test
-update
-trigger master check
+---
+
+## このデモで確認できること
+
+* コード変更だけのPRはCIで失敗する
+* 新規ADRを追加するとCIが成功する
+* `adr-gate` が必須チェックとして機能する
+* レビュー承認がないとマージできない
+* ADR作成とレビューを組み合わせた開発フローを構築できる

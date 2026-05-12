@@ -120,7 +120,7 @@ function Footer() {
     <footer className="footer">
       <p>
         © {new Date().getFullYear()} Kyndryl Dashboard (Demo) — Built with React &amp; GitHub Copilot
-        <span className="footer-version" aria-label="version"> · v1.0</span>
+        <span className="footer-version" aria-label="version"> · v1.1</span>
       </p>
     </footer>
   );

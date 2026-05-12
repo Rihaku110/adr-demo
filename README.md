@@ -100,3 +100,4 @@ adrs/0008-fix-hero-wrap-and-status-value-clipping.md
 * Level 1：ADRがないとタスク完了できない
 
 👉 Hookで促し、Gateで強制することで運用を成立させる
+test

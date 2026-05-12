@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "hooks": {
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "bash": "echo '[ADR Reminder] このタスクを完了する前に adrs/<NNNN>-<title>.md を作成してください。Decision / Rationale / Alternatives を含めてください。'",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/level-1-enforced/gate-adr-check.sh dir adrs",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

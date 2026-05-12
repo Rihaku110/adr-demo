@@ -101,3 +101,4 @@ adrs/0008-fix-hero-wrap-and-status-value-clipping.md
 
 👉 Hookで促し、Gateで強制することで運用を成立させる
 test
+update

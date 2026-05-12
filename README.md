@@ -1,11 +1,11 @@
 # ADR Demo
 
-このリポジトリは、ADR（Architecture Decision Record）を段階的に導入し、
-最終的に**コード変更とADRを同一のPull Requestで強制する仕組み**のデモです。
+このリポジトリは、ADR（Architecture Decision Record）を段階的に導入し、  
+最終的に **コード変更とADRを同一のPull Requestで強制する仕組み** のデモです。
 
 ---
 
-## 構成
+## 📁 構成
 
 .github/
   workflows/
@@ -20,21 +20,20 @@ README.md
 
 ---
 
-## Level 0: ADRの導入
+## 🧭 Level 0: ADRの導入
 
-`adrs/` ディレクトリを作成し、ADRを手動で作成する段階です。
+adrs/ ディレクトリを作成し、ADRを手動で作成する段階です。
 
-この時点では「ADRを書く」というルールはありますが、強制力はありません。
+- ADRを書くルールはある
+- ただし強制力はない
 
 ---
 
-## Level 1: ローカルでの促し（Hook + AI）
+## 🤖 Level 1: ローカルでの促し（Hook + AI）
 
 開発者やAIに対して、ADR作成を促す段階です。
 
-### Hook
-
-Hookやスクリプトを使って、ローカルでADR作成を促します。
+### 🔧 Hook
 
 - タスク開始時にADR作成を通知
 - ADRの存在チェックを実行
@@ -43,119 +42,96 @@ Hookやスクリプトを使って、ローカルでADR作成を促します。
 
 ---
 
-### Copilot Instructions
+### 🧠 Copilot Instructions
 
-`.github/copilot-instructions.md` により、AIにルールを教えます。
+.github/copilot-instructions.md によりAIにルールを伝えます。
 
-- コード変更時は必ずADRを作成するよう指示
-- ADRを同じ変更（同一PR）に含めるよう指示
+- コード変更時はADRを作成するよう指示
+- 同一PR内でADRを含めるよう指示
 - 必須セクション（Decision / Rationale / Alternatives）を定義
 
-👉 AIが「コード変更 + ADR同時作成」を自然に行うよう誘導
+👉 AIが自然に「コード変更 + ADR作成」を行うよう誘導
 
 ---
 
-### Skills（adr-writer）
+### 🧩 Skills（adr-writer）
 
-`.github/skills/adr-writer/` により、AIの行動を補助します。
-
-- コード変更時にADR作成を促す
+- コード変更時にADR作成を補助
 - ADRファイル生成を支援
 
-👉 AIの自動ADR生成を補助
+👉 AIの自動生成を強化
 
 ---
 
-## Level 1.5: CI + Branch Protectionによる強制
+## 🚧 Level 1.5: CI + Branch Protectionによる強制
 
-GitHub Actions と Branch Protection を組み合わせて、
-**「コード変更とADRを同一PRで提出すること」を強制**します。
+GitHub Actions と Branch Protection を組み合わせて  
+**コード変更とADRを同一PRで提出することを強制**します。
 
 ---
 
-### CI（GitHub Actions）
+### ⚙️ CI（GitHub Actions）
 
-対象ファイル:
+対象ファイル：
 
 .github/workflows/adr-gate.yml
 
-PR作成時に自動でチェックを実行します。
+PR作成時に自動でチェックが実行されます。
 
 ---
 
-### 判定ルール
+### 📏 判定ルール
 
-コード変更あり
-  ↓
-今回の差分にADRが含まれているかチェック
+#### ❌ ADRがない場合
 
-YES → 成功
-NO  → 失敗（マージ不可）
-
----
-
-### 重要なポイント
-
-ADRは「存在しているだけ」では不十分です
-
-既存ADRがある → NG
-今回の変更にADRが含まれる → OK
-
-必ず「同じPull Request内」で追加する必要があります
+- コード変更
+- 今回の差分にADRなし
+- CI失敗
+- マージ不可
 
 ---
 
-### Branch Protection
+#### ✅ ADRがある場合
 
-`master` ブランチに対して以下を必須化します。
+- コード変更
+- 同じPRでADR追加
+- CI成功
+- レビュー承認
+- マージ可能
+
+---
+
+### ⚠️ 重要ポイント
+
+- ADRは「存在しているだけ」では不十分
+- 今回の変更に含まれている必要がある
+- 必ず同じPull Requestに含める
+
+---
+
+### 🔒 Branch Protection
+
+master ブランチに対して以下を必須化：
 
 - Pull Request 必須
-- `adr-gate` の成功必須
+- adr-gate 成功必須
 - レビュー承認必須
 
 👉 条件を満たさない限りマージ不可
 
 ---
 
-## 動作イメージ
-
-### ADRがない場合
-
-コード変更
-↓
-今回の差分にADRなし
-↓
-CI失敗
-↓
-マージ不可
-
----
-
-### ADRがある場合
-
-コード変更
-↓
-同じPRでADR追加
-↓
-CI成功
-↓
-レビュー承認
-↓
-マージ可能
-
----
-
-## まとめ
+## 📊 まとめ
 
 | レベル | 内容 |
-|------|------|
-| Level 0 | ADRルールを導入する |
+|--------|------|
+| Level 0 | ADRルールを導入 |
 | Level 1 | Hook + AIでADR作成を促す |
-| Level 1.5 | CI + Branch ProtectionでADRを同一PRで強制する |
+| Level 1.5 | CI + Branch ProtectionでADRを同一PRで強制 |
 
 ---
 
-## 全体設計の考え方
+## 🏗️ 全体設計の考え方
 
 この仕組みは以下の3層で構成されています。
 
@@ -173,11 +149,11 @@ AI（Copilot Instructions / Skills）
 
 ---
 
-## このデモで確認できること
+## ✅ このデモで確認できること
 
 - コード変更のみのPRはCIで失敗する
 - ADRを同一PRに含めるとCIが成功する
-- `adr-gate` が必須チェックとして機能する
+- adr-gate が必須チェックとして機能する
 - レビュー承認がないとマージできない
 - AIがADR作成を補助する
-- ADRとコード変更を一体化した開発フローを実現できる
+- ADRとコード変更を一体化した開発フローを構築できる

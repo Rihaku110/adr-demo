@@ -13,18 +13,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check ADR exists in this PR
+      - name: Check ADR is required only for code changes
         run: |
           CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
 
           echo "Changed files:"
           echo "$CHANGED"
 
+          # ADRがあるならOK
           if echo "$CHANGED" | grep -q '^adrs/.*\.md$'; then
             echo "ADR found."
             exit 0
           fi
 
-          echo "ADR is required for this PR."
-          echo "Create adrs/<NNNN>-<title>.md"
-          exit 1
+          # コード変更がある場合だけADR必須
+          if echo "$CHANGED" | grep -qE '^(src/|react-app/src/|package.json|package-lock.json|vite.config.js|eslint.config.js)'; then
+            echo "ADR is required for code changes."
+            echo "Create adrs/<NNNN>-<title>.md"
+            exit 1
+          fi
+
+          # READMEなどの軽微な変更はADR不要
+          echo "No ADR required for this change."
+          exit 0

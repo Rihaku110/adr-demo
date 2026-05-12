@@ -1,0 +1,30 @@
+name: ADR Gate
+
+on:
+  pull_request:
+
+jobs:
+  adr-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check ADR exists in this PR
+        run: |
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          if echo "$CHANGED" | grep -q '^adrs/.*\.md$'; then
+            echo "ADR found."
+            exit 0
+          fi
+
+          echo "ADR is required for this PR."
+          echo "Create adrs/<NNNN>-<title>.md"
+          exit 1

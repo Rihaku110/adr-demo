@@ -1,4 +1,14 @@
 {
   "chat.useAgentSkills": true,
-  "github.copilot.chat.codeGeneration.useInstructionFiles": true
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": [
+      ".github/workflows/*.yml",
+      ".github/workflows/*.yaml"
+    ]
+  },
+  "yaml.validate": true,
+  "yaml.customTags": [
+    "!reference sequence"
+  ]
 }

@@ -1,7 +1,11 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
 name: ADR Gate
 
 on:
   pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
@@ -17,13 +21,16 @@ jobs:
           fetch-depth: 0
 
       - name: Check ADR is required only for code changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          echo "Event: ${{ github.event_name }}"
+          echo "Event: $EVENT_NAME"
 
           # PR と push で diff の取り方を分岐
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "Using PR diff"
-            CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+            CHANGED=$(git diff --name-only origin/$BASE_REF...HEAD)
           else
             echo "Using push diff"
             CHANGED=$(git diff --name-only HEAD~1 HEAD)

@@ -8,12 +8,12 @@
 ## 📁 構成
 
 .github/
-  workflows/
-    adr-gate.yml
-  hooks/
-  skills/
-    adr-writer/
-  copilot-instructions.md
+workflows/
+adr-gate.yml
+hooks/
+skills/
+adr-writer/
+copilot-instructions.md
 adrs/
 react-app/
 README.md

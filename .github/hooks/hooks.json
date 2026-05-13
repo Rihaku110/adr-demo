@@ -1,18 +1,42 @@
 {
   "version": 1,
   "hooks": {
-    "userPromptSubmitted": [
+    "SessionStart": [
       {
         "type": "command",
-        "bash": "echo '[ADR Reminder] hook fired'",
+        "bash": "bash .github/hooks/level-1-enforced/00-session-reminder.sh",
         "cwd": ".",
         "timeoutSec": 10
       }
     ],
-    "postToolUse": [
+    "UserPromptSubmitted": [
       {
         "type": "command",
-        "bash": "bash .github/hooks/level-1-enforced/gate-adr-check.sh dir adrs",
+        "bash": "bash .github/hooks/level-1-enforced/10-classify-request.sh",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/level-1-enforced/20-pre-edit-guard.sh",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/level-1-enforced/30-track-changes.sh",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "bash": "bash .github/hooks/level-1-enforced/90-gate-adr-check.sh",
         "cwd": ".",
         "timeoutSec": 10
       }

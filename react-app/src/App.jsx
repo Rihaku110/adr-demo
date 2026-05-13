@@ -70,6 +70,21 @@ const CHART_TYPES = [
   { id: "line", label: "折れ線" },
 ];
 
+// ---------- ユーティリティ ----------
+const formatNumber = (n) =>
+  Number.isInteger(n) ? n.toLocaleString() : n.toFixed(2);
+
+const withSign = (n) => `${n >= 0 ? "+" : ""}${formatNumber(n)}`;
+
+const trendClassOf = (n) =>
+  n == null ? "" : n > 0 ? "is-up" : n < 0 ? "is-down" : "";
+
+const trendArrowOf = (n) =>
+  n == null ? null : n > 0 ? "▲" : n < 0 ? "▼" : "●";
+
+const percentChange = (curr, base) =>
+  base === 0 ? 0 : ((curr - base) / Math.abs(base)) * 100;
+
 // ---------- プレゼンテーショナルコンポーネント ----------
 function Navbar({ theme, onToggleTheme }) {
   return (
@@ -361,7 +376,6 @@ function Chart({ data, type, hovered, onHover }) {
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              filter="url(#glow)"
             />
             {data.map((d, i) => (
               <circle

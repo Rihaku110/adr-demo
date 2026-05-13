@@ -20,63 +20,73 @@ README.md
 
 ---
 
-## 🧭 Level 0: ADRの導入
+## 🧭 レベル構成
 
-adrs/ ディレクトリを作成し、ADRを手動で作成する段階です。
+この仕組みは以下の3段階で構成されています。
 
-- ADRを書くルールはある
-- ただし強制力はない
-
----
-
-## 🤖 Level 1: ローカルでの促し（Hook + AI）
-
-開発者やAIに対して、ADR作成を促す段階です。
-
-### 🔧 Hook
-
-- タスク開始時にADR作成を通知
-- ADRの存在チェックを実行
-
-👉 開発者に「ADRを書く必要がある」ことを気づかせる
+| レベル | 役割 | 内容 |
+|--------|------|------|
+| Level 0 | ルールを伝える | AIと開発者にADRルールを共有 |
+| Level 1 | 気づかせる | 作業中にADRの必要性を通知 |
+| Level 1.5 | 強制する | CIでルール違反をブロック |
 
 ---
 
-### 🧠 Copilot Instructions
+## 🟢 Level 0: ルールの共有（AI / 人間）
 
-.github/copilot-instructions.md によりAIにルールを伝えます。
+### 対象
 
-- コード変更時はADRを作成するよう指示
-- 同一PR内でADRを含めるよう指示
-- 必須セクション（Decision / Rationale / Alternatives）を定義
+- `.github/copilot-instructions.md`
+- `.github/skills/adr-writer/`
 
-👉 AIが自然に「コード変更 + ADR作成」を行うよう誘導
+### 役割
 
----
+- ADR作成ルールをAIに伝える
+- コード変更時にADRを作るよう誘導する
 
-### 🧩 Skills（adr-writer）
+### 特徴
 
-- コード変更時にADR作成を補助
-- ADRファイル生成を支援
+- 強制力なし
+- 守らなくても処理は進む
+- AIの行動を自然に誘導する
 
-👉 AIの自動生成を強化
-
----
-
-## 🚧 Level 1.5: CI + Branch Protectionによる強制
-
-GitHub Actions と Branch Protection を組み合わせて  
-**コード変更とADRを同一PRで提出することを強制**します。
+👉 「こうするべき」を共有するレイヤー
 
 ---
 
-### ⚙️ CI（GitHub Actions）
+## 🟡 Level 1: 作業中の気づき（Hook）
 
-対象ファイル：
+### 対象
 
-.github/workflows/adr-gate.yml
+- `.github/hooks/hooks.json`
+- `.github/hooks/level-1-enforced/`
 
-PR作成時に自動でチェックが実行されます。
+### 役割
+
+- タスク実行中にADRの必要性を通知
+- ADRの存在チェックを行う
+
+### 特徴
+
+- 開発中に気づきを与える
+- 軽いガードレール
+- 基本的にはブロックしない
+
+👉 「今ADR必要では？」と気づかせるレイヤー
+
+---
+
+## 🔴 Level 1.5: CI + Branch Protectionによる強制
+
+### 対象
+
+- `.github/workflows/adr-gate.yml`
+- Branch Protection
+
+### 役割
+
+- PR作成時に自動チェック
+- ADRがない変更をブロック
 
 ---
 
@@ -104,7 +114,7 @@ PR作成時に自動でチェックが実行されます。
 ### ⚠️ 重要ポイント
 
 - ADRは「存在しているだけ」では不十分
-- 今回の変更に含まれている必要がある
+- **今回の変更に含まれている必要がある**
 - 必ず同じPull Requestに含める
 
 ---
@@ -114,20 +124,10 @@ PR作成時に自動でチェックが実行されます。
 master ブランチに対して以下を必須化：
 
 - Pull Request 必須
-- adr-gate 成功必須
+- `adr-gate` 成功必須
 - レビュー承認必須
 
 👉 条件を満たさない限りマージ不可
-
----
-
-## 📊 まとめ
-
-| レベル | 内容 |
-|--------|------|
-| Level 0 | ADRルールを導入 |
-| Level 1 | Hook + AIでADR作成を促す |
-| Level 1.5 | CI + Branch ProtectionでADRを同一PRで強制 |
 
 ---
 
@@ -135,11 +135,11 @@ master ブランチに対して以下を必須化：
 
 この仕組みは以下の3層で構成されています。
 
-AI（Copilot Instructions / Skills）
+AI（Instructions / Skills）
 ↓
 開発者（Hook）
 ↓
-システム（CI + Branch Protection）
+システム（CI / Branch Protection）
 
 - AI：ADR作成を自然に誘導
 - 開発者：作業中に気づく
@@ -149,11 +149,21 @@ AI（Copilot Instructions / Skills）
 
 ---
 
+## 📊 まとめ
+
+| レベル | 内容 |
+|--------|------|
+| Level 0 | ルールを共有する |
+| Level 1 | ADR作成を促す |
+| Level 1.5 | ADRを同一PRで強制する |
+
+---
+
 ## ✅ このデモで確認できること
 
 - コード変更のみのPRはCIで失敗する
 - ADRを同一PRに含めるとCIが成功する
-- adr-gate が必須チェックとして機能する
+- `adr-gate` が必須チェックとして機能する
 - レビュー承認がないとマージできない
 - AIがADR作成を補助する
 - ADRとコード変更を一体化した開発フローを構築できる

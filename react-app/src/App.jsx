@@ -502,6 +502,9 @@ function App() {
             <div>
               <h2>{dataset.label}</h2>
               <p className="card-sub">{dataset.note}</p>
+              <span className="updated-badge" title="データセット内の最新期間">
+                <span className="updated-dot" /> 最終更新: {dataset.data[dataset.data.length - 1].x}
+              </span>
             </div>
             <HeaderQuote data={dataset.data} unit={dataset.unit} />
           </div>
@@ -532,3 +535,4 @@ function App() {
 }
 
 export default App;
+// fail clean test

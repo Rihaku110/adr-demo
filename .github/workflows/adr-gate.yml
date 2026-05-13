@@ -18,7 +18,16 @@ jobs:
 
       - name: Check ADR is required only for code changes
         run: |
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          echo "Event: ${{ github.event_name }}"
+
+          # PR と push で diff の取り方を分岐
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Using PR diff"
+            CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            echo "Using push diff"
+            CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          fi
 
           echo "Changed files:"
           echo "$CHANGED"
